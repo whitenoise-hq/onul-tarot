@@ -1,0 +1,789 @@
+:root {
+  /* 검정 바탕에 금색으로만 포인트를 줘요 */
+  --color-primary: #d9b46a;
+  --color-primary-weak: rgba(217, 180, 106, 0.14);
+  --color-gold: #d9b46a;
+  --color-gold-weak: rgba(217, 180, 106, 0.14);
+  --color-bg: #0a0a0b;
+  --color-card: #161618;
+  --color-card-strong: #222225;
+  --color-text: #f2eee6;
+  --color-text-sub: #a5a19a;
+  --color-text-weak: #64615c;
+  --color-error: #ff7b86;
+  --tarot-black: #1c1c1f;
+  --tarot-black-deep: #0c0c0e;
+  --tarot-gold: #c9a24b;
+  --tarot-cream: #f7f1e3;
+  --radius-card: 20px;
+  --bottom-actions-height: 84px;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--color-bg) !important;
+  color: var(--color-text);
+  color-scheme: dark;
+}
+
+/* 화면 맨 위의 은은한 빛은 시간대마다 색이 달라요 */
+.app {
+  --glow-color: #1d1a14;
+}
+
+.app[data-period="morning"] {
+  --glow-color: #3a2414;
+}
+
+.app[data-period="day"] {
+  --glow-color: #2a2414;
+}
+
+.app[data-period="evening"] {
+  --glow-color: #36190f;
+}
+
+/* 은은한 별빛 배경 */
+.app {
+  background:
+    radial-gradient(1px 1px at 12% 18%, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 78% 9%, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1.5px 1.5px at 64% 32%, rgba(217, 180, 106, 0.5), transparent),
+    radial-gradient(1px 1px at 30% 44%, rgba(255, 255, 255, 0.3), transparent),
+    radial-gradient(1px 1px at 88% 52%, rgba(255, 255, 255, 0.35), transparent),
+    radial-gradient(120% 50% at 50% 0%, var(--glow-color) 0%, transparent 60%);
+  background-repeat: no-repeat;
+}
+
+#root {
+  width: 100%;
+  max-width: 480px;
+}
+
+.app {
+  min-height: 100vh;
+  /* :has()를 지원하지 않는 오래된 웹뷰에서도 하단 버튼에 내용이 가리지 않게 여유를 둬요 */
+  padding-bottom: calc(env(safe-area-inset-bottom) + 96px);
+}
+
+.page {
+  padding: 8px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+  margin: 0 0 8px;
+}
+
+.card-title span {
+  color: var(--color-text-weak);
+  font-weight: 500;
+}
+
+.icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-primary-weak);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+/* 뒤로가기 */
+.back-bar {
+  margin: 8px 0 -8px -8px;
+}
+
+.back-bar button {
+  appearance: none;
+  border: none;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 8px;
+  font-size: 15px;
+  color: var(--color-text-sub);
+  cursor: pointer;
+}
+
+/* 페이지 제목 */
+.page-header {
+  padding: 24px 0 8px;
+}
+
+.page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--color-text);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.3px;
+}
+
+.page-header-icon {
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+
+.page-header p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-sub);
+}
+
+/* 타로 카드 (그림이 없을 때의 기본 디자인) */
+.tarot-card {
+  display: block;
+  box-sizing: border-box;
+  aspect-ratio: 7 / 12;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 0 24px rgba(217, 180, 106, 0.12);
+  user-select: none;
+}
+
+.tarot-card.large {
+  width: 196px;
+}
+
+.tarot-card.medium {
+  width: 140px;
+}
+
+.tarot-card.small {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tarot-face,
+.tarot-back {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10% 8%;
+  background: radial-gradient(circle at 50% 40%, #2c2a26, var(--tarot-black) 60%, var(--tarot-black-deep));
+  color: var(--tarot-gold);
+}
+
+/* 안쪽 금색 테두리 */
+.tarot-face::before,
+.tarot-back::before {
+  content: "";
+  position: absolute;
+  inset: 5%;
+  border: 1px solid rgba(201, 162, 75, 0.7);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.tarot-back {
+  justify-content: center;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(201, 162, 75, 0.18), transparent 45%),
+    radial-gradient(circle at 50% 40%, #2c2a26, var(--tarot-black) 60%, var(--tarot-black-deep));
+}
+
+.tarot-numeral {
+  font-size: 0.8em;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.tarot-icon {
+  width: 42%;
+  height: auto;
+}
+
+.tarot-name {
+  color: var(--tarot-cream);
+  font-size: 0.85em;
+  font-weight: 600;
+  text-align: center;
+  word-break: keep-all;
+}
+
+.tarot-card.large {
+  font-size: 17px;
+}
+
+.tarot-card.medium {
+  font-size: 14px;
+}
+
+.tarot-card.small {
+  font-size: 10px;
+}
+
+/* 뒤집히는 카드 */
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-card.large {
+  width: 196px;
+}
+
+.flip-card.medium {
+  width: 140px;
+}
+
+.flip-card.small {
+  width: 100%;
+}
+
+.flip-inner {
+  position: relative;
+  transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.2, 1);
+  transform-style: preserve-3d;
+  transition-delay: inherit;
+}
+
+.flip-card.flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-side {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-front {
+  position: absolute;
+  inset: 0;
+  transform: rotateY(180deg);
+}
+
+/* 카드 무대 */
+.card-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 8px;
+  text-align: center;
+}
+
+.draw-stage {
+  padding-top: 40px;
+  gap: 24px;
+}
+
+.streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--color-gold-weak);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-gold);
+}
+
+.card-name {
+  margin: 12px 0 0;
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.card-en {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-sub);
+  letter-spacing: 0.5px;
+}
+
+.keywords {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.keyword {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-gold-weak);
+  color: var(--color-gold);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 뒤집힌 뒤에 풀이가 부드럽게 나타나요 */
+.reveal {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.5s ease 0.5s,
+    transform 0.5s ease 0.5s;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reveal.shown {
+  opacity: 1;
+  transform: none;
+}
+
+/* 풀이 */
+.reading {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reading-text {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+.reading-text.sub {
+  margin-top: 8px;
+  color: var(--color-text-sub);
+  font-size: 15px;
+}
+
+.advice {
+  background: linear-gradient(135deg, #2a2418, #18171a);
+}
+
+.advice .card-title {
+  color: var(--color-gold);
+}
+
+.advice-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--tarot-cream);
+  word-break: keep-all;
+}
+
+.topic-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.topic-list li {
+  display: flex;
+  gap: 12px;
+}
+
+.topic-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--color-card-strong);
+  color: var(--color-gold);
+  flex-shrink: 0;
+}
+
+.topic-list strong {
+  font-size: 15px;
+  color: var(--color-text);
+}
+
+.topic-list p {
+  margin: 2px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-text-sub);
+  word-break: keep-all;
+}
+
+.text-actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.text-action {
+  appearance: none;
+  border: none;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 15px;
+  color: var(--color-text-sub);
+  cursor: pointer;
+}
+
+.disclaimer {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-weak);
+}
+
+/* 고민 타로 */
+.topic-options {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.topic-option {
+  appearance: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--color-card);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.topic-option strong {
+  display: block;
+  font-size: 17px;
+}
+
+.topic-option span {
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
+.topic-option.selected {
+  background: var(--color-primary-weak);
+  color: var(--color-text);
+}
+
+.topic-option.selected svg {
+  color: var(--color-primary);
+}
+
+.ad-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--color-text-weak);
+}
+
+.spread-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 8px 4px 12px;
+}
+
+.spread-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.spread-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-sub);
+}
+
+.sheet-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 24px 16px;
+}
+
+.sheet-body strong {
+  display: block;
+  font-size: 17px;
+}
+
+.sheet-body span {
+  font-size: 14px;
+  color: var(--color-text-sub);
+}
+
+.sheet-cta {
+  padding: 8px 20px calc(16px + env(safe-area-inset-bottom));
+}
+
+.sheet-cta-double {
+  display: flex;
+  gap: 8px;
+}
+
+.sheet-cta-double > * {
+  flex: 1;
+}
+
+.banner-slot {
+  width: 100%;
+  min-height: 96px;
+  margin-top: 12px;
+}
+
+/* 카드 고르는 화면에서는 맨 위에 둬요 */
+.page > .banner-slot:first-child {
+  margin-top: 8px;
+}
+
+/* 하단 고정 버튼: 화면 맨 아래에 붙고, 위로 콘텐츠가 자연스럽게 사라지게 그라데이션을 깔아요 */
+.bottom-actions {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--color-bg) 75%, rgba(10, 10, 11, 0));
+  z-index: 9;
+}
+
+.bottom-actions > * {
+  flex: 1;
+}
+
+/* TDS가 브랜드 색을 어둡게 바꿔 칙칙한 금색이 돼서, 밝은 금색 바탕에 남색 글씨로 덮어써요.
+   TDS가 인라인 CSS 변수로 색을 넣어서 !important로 덮어써요. */
+.bottom-actions .tds-mobile-button {
+  --button-background-color: var(--color-gold) !important;
+  --button-gradient-color: var(--color-gold) !important;
+  --button-color: var(--tarot-black-deep) !important;
+  --button-loader-color: var(--tarot-black-deep) !important;
+  font-weight: 700;
+}
+
+.page:has(~ .bottom-actions) {
+  padding-bottom: var(--bottom-actions-height);
+}
+
+@media (min-width: 481px) {
+  .bottom-actions {
+    left: 50%;
+    right: auto;
+    width: 480px;
+    box-sizing: border-box;
+    transform: translateX(-50%);
+  }
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  min-height: 60vh;
+  text-align: center;
+  color: var(--color-text-weak);
+}
+
+.save-error {
+  background: var(--color-card);
+  margin: 12px 20px 0;
+  color: var(--color-error);
+  font-size: 14px;
+}
+
+/* 카드 고르기: 뒷면 카드를 부채꼴로 펼쳐요 */
+.card-fan {
+  position: relative;
+  width: 100%;
+  height: 210px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.fan-card {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  position: absolute;
+  top: 20px;
+  width: 84px;
+  transform-origin: 50% 120%;
+  transition: transform 0.35s cubic-bezier(0.3, 0.7, 0.2, 1), filter 0.35s;
+  cursor: pointer;
+}
+
+.fan-card.picked .tarot-card {
+  box-shadow:
+    0 0 0 2px var(--color-gold),
+    0 0 28px rgba(217, 180, 106, 0.55);
+}
+
+.card-fan:has(.picked) .fan-card:not(.picked) {
+  filter: brightness(0.6);
+}
+
+/* 카드 아래 시간대 인사 */
+.time-greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.time-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 4px;
+  color: var(--color-gold);
+  background: radial-gradient(circle, rgba(217, 180, 106, 0.22), transparent 70%);
+}
+
+.period-morning .time-icon,
+.period-evening .time-icon {
+  color: #f0a560;
+  background: radial-gradient(circle, rgba(240, 165, 96, 0.26), transparent 70%);
+}
+
+.time-greeting strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.time-greeting p {
+  margin: 0;
+  white-space: pre-line;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-text-sub);
+  word-break: keep-all;
+}
+
+.pick-steps {
+  display: flex;
+  gap: 8px;
+}
+
+.pick-steps span {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--color-card);
+  color: var(--color-text-weak);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.3s, color 0.3s;
+}
+
+.pick-steps span.done {
+  background: var(--color-gold-weak);
+  color: var(--color-gold);
+}
+
+.pick-hint {
+  margin: 0;
+  font-size: 15px;
+  color: var(--color-text-sub);
+}
+
+/* 다른 타로 바로가기 */
+.shortcuts ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shortcut {
+  appearance: none;
+  border: none;
+  background: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.shortcut div {
+  flex: 1;
+}
+
+.shortcut strong {
+  display: block;
+  font-size: 16px;
+}
+
+.shortcut span:not(.topic-icon) {
+  font-size: 13px;
+  color: var(--color-text-sub);
+}
+
+.shortcut-arrow {
+  color: var(--color-text-weak);
+}
+
+/* 앱 전체에서 눌렀을 때 생기는 포커스 테두리를 없애요.
+   TDS 기본 스타일의 button:focus 규칙이 더 우선이라 !important로 덮어써요. */
+*:focus,
+*:focus-visible {
+  outline: none !important;
+}
+
+/* TDS 토스트 기본 배경이 흰색이라, 화면과 구분되는 어두운 토스트로 바꿔요.
+   TDS가 인라인 CSS 변수로 색을 넣어서 !important로 덮어써요. */
+#tds-mobile-portal-container [style*="--toast-background-color"] {
+  --toast-background-color: rgba(51, 61, 75, 0.95) !important;
+  --toast-text-color: #ffffff !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner,
+  .reveal {
+    transition: none;
+  }
+}
