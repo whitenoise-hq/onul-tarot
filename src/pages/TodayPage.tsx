@@ -1,6 +1,6 @@
 import { Button } from "@toss/tds-mobile";
-import { Flame, MoonStar, Share2 } from "lucide-react";
-import { useState } from "react";
+import { Bell, Flame, MoonStar, Share2 } from "lucide-react";
+import { type ReactNode, useState } from "react";
 
 import { BannerAd } from "../components/BannerAd";
 import { BottomActions } from "../components/BottomActions";
@@ -23,9 +23,16 @@ interface TodayPageProps {
   onDraw: () => void;
   onShare: (card: TarotCard) => void;
   onOpenTopic: (topic: Topic) => void;
+  // 하단 메뉴가 없어서 알림 설정은 제목 오른쪽 버튼으로 열어요. 없으면 버튼을 숨겨요.
+  onOpenReminder?: () => void;
 }
 
-export function TodayPage({ card, streak, onDraw, onShare, onOpenTopic }: TodayPageProps) {
+export function TodayPage({ card, streak, onDraw, onShare, onOpenTopic, onOpenReminder }: TodayPageProps) {
+  const reminderButton = onOpenReminder && (
+    <button type="button" className="header-icon-button" aria-label="알림 설정" onClick={onOpenReminder}>
+      <Bell size={20} strokeWidth={2.2} />
+    </button>
+  );
   // 이 화면에서 방금 고른 카드만 뒤집히는 모습을 보여줘요.
   const [justPicked, setJustPicked] = useState(false);
   const handleDraw = () => {
@@ -33,13 +40,26 @@ export function TodayPage({ card, streak, onDraw, onShare, onOpenTopic }: TodayP
     onDraw();
   };
 
-  if (!card) return <PickToday streak={streak} onDraw={handleDraw} />;
+  if (!card) return <PickToday streak={streak} headerAction={reminderButton} onDraw={handleDraw} />;
   return (
-    <TodayResult card={card} streak={streak} animate={justPicked} onShare={onShare} onOpenTopic={onOpenTopic} />
+    <TodayResult
+      card={card}
+      streak={streak}
+      animate={justPicked}
+      headerAction={reminderButton}
+      onShare={onShare}
+      onOpenTopic={onOpenTopic}
+    />
   );
 }
 
-function PickToday({ streak, onDraw }: { streak: number; onDraw: () => void }) {
+interface PickTodayProps {
+  streak: number;
+  headerAction: ReactNode;
+  onDraw: () => void;
+}
+
+function PickToday({ streak, headerAction, onDraw }: PickTodayProps) {
   const [picked, setPicked] = useState<number[]>([]);
   const now = new Date();
   const period = periodOf(now.getHours());
@@ -48,7 +68,7 @@ function PickToday({ streak, onDraw }: { streak: number; onDraw: () => void }) {
     <>
       <div className="page today">
         <BannerAd />
-        <PageHeader icon={MoonStar} title="오늘의 카드" subtitle="마음을 가라앉히고, 끌리는 카드를 한 장 골라 주세요." />
+        <PageHeader icon={MoonStar} action={headerAction} title="오늘의 카드" subtitle="마음을 가라앉히고, 끌리는 카드를 한 장 골라 주세요." />
         <div className="card-stage draw-stage">
           <CardFan count={FAN_SIZE} picked={picked} onToggle={(index) => setPicked(togglePick(picked, index, 1))} />
           <TimeGreeting period={period} now={now} />
@@ -74,18 +94,20 @@ function PickToday({ streak, onDraw }: { streak: number; onDraw: () => void }) {
 interface TodayResultProps {
   card: TarotCard;
   animate: boolean;
+  headerAction: ReactNode;
   streak: number;
   onShare: (card: TarotCard) => void;
   onOpenTopic: (topic: Topic) => void;
 }
 
-function TodayResult({ card, streak, animate, onShare, onOpenTopic }: TodayResultProps) {
+function TodayResult({ card, streak, animate, headerAction, onShare, onOpenTopic }: TodayResultProps) {
   const flipped = useFlipAfterMount(card.id, animate);
 
   return (
     <div className="page today">
       <PageHeader
         icon={MoonStar}
+        action={headerAction}
         title="오늘의 카드"
         subtitle={streak > 1 ? `${streak}일째 이어서 뽑고 있어요` : "오늘 하루를 비춰 줄 카드예요."}
       />

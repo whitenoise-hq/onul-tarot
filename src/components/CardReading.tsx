@@ -1,4 +1,6 @@
 import { TOPIC_LABEL } from "../content/deck";
+import { Sparkles } from "lucide-react";
+
 import type { TarotCard, Topic } from "../content/types";
 import { TOPIC_ICON } from "./topicIcons";
 
@@ -26,7 +28,10 @@ export function CardReading({ card }: { card: TarotCard }) {
       </section>
 
       <section className="card reading-block advice">
-        <h2 className="card-title">오늘의 조언</h2>
+        <h2 className="advice-title">
+          <Sparkles size={16} strokeWidth={2.4} aria-hidden />
+          오늘의 조언
+        </h2>
         <p className="advice-text">{card.today.advice}</p>
       </section>
 

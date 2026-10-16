@@ -23,7 +23,12 @@ interface CardFaceProps {
 export function CardFace({ card, size = "medium" }: CardFaceProps) {
   const image = cardImage(card.id);
   if (image) {
-    return <img className={`tarot-card ${size}`} src={image} alt={card.nameKo} draggable={false} />;
+    // 그림 위에 금색 테두리를 안쪽으로 겹쳐 그려요 (.tarot-image::after)
+    return (
+      <div className={`tarot-card tarot-image ${size}`}>
+        <img src={image} alt={card.nameKo} draggable={false} />
+      </div>
+    );
   }
   const Icon = SUIT_ICON[card.suit ?? "major"];
   return (

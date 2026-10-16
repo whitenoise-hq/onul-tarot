@@ -1,5 +1,5 @@
 import { Button } from "@toss/tds-mobile";
-import { Check, Clapperboard } from "lucide-react";
+import { Clapperboard } from "lucide-react";
 import { type ReactNode, useState } from "react";
 
 import { BackBar } from "../components/BackBar";
@@ -9,6 +9,7 @@ import { CardFan } from "../components/CardFan";
 import { PageHeader } from "../components/PageHeader";
 import { FlipCard } from "../components/TarotCardView";
 import { TopicShortcuts } from "../components/TopicShortcuts";
+import { TOPIC_ICON } from "../components/topicIcons";
 import { getCard, POSITIONS, TOPIC_LABEL, TOPICS } from "../content/deck";
 import type { Topic } from "../content/types";
 import { togglePick } from "../domain/pick";
@@ -64,10 +65,20 @@ export function SpreadPage({
     <>
       <div className="page">
         {backBar}
-        <PageHeader title="고민 타로" subtitle="고민을 하나 떠올리고 주제를 골라 주세요. 카드 3장으로 과거·현재·미래를 읽어요." />
+        <PageHeader
+          title="고민 타로"
+          subtitle={
+            <>
+              고민을 하나 떠올리고 주제를 골라 주세요.
+              <br />
+              카드 3장으로 과거·현재·미래를 읽어요.
+            </>
+          }
+        />
         <ul className="topic-options">
           {TOPICS.map((option) => {
             const selected = option.id === topic;
+            const Icon = TOPIC_ICON[option.id];
             return (
               <li key={option.id}>
                 <button
@@ -76,11 +87,11 @@ export function SpreadPage({
                   aria-pressed={selected}
                   onClick={() => setTopic(option.id)}
                 >
-                  <div>
-                    <strong>{option.label}</strong>
-                    <span>{option.description}</span>
-                  </div>
-                  {selected && <Check size={20} strokeWidth={2.6} />}
+                  <span className="topic-icon">
+                    <Icon size={18} strokeWidth={2.2} />
+                  </span>
+                  <strong>{option.label}</strong>
+                  <span className="topic-description">{option.description}</span>
                 </button>
               </li>
             );
@@ -120,7 +131,13 @@ function PickThree({ backBar, topic, onDone }: PickThreeProps) {
         <BannerAd />
         <PageHeader
           title={`${TOPIC_LABEL[topic]} 고민 타로`}
-          subtitle="고민을 떠올리며 끌리는 카드를 3장 골라 주세요. 다시 누르면 취소돼요."
+          subtitle={
+            <>
+              고민을 떠올리며 끌리는 카드를 3장 골라 주세요.
+              <br />
+              다시 누르면 취소돼요.
+            </>
+          }
         />
         <div className="card-stage draw-stage">
           <CardFan

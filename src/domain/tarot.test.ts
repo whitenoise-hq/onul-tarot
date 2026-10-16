@@ -92,6 +92,11 @@ describe("parseState / serializeState", () => {
     expect(parseState(serializeState(state))).toEqual(state);
   });
 
+  it("알림 동의 여부가 없던 예전 저장값도 읽어요", () => {
+    const old = JSON.stringify({ version: 1, daily: {}, lastSpread: null, reminderAsked: true });
+    expect(parseState(old)).toEqual({ ...DEFAULT_STATE, reminderAsked: true, reminderAgreed: false });
+  });
+
   it("저장된 값이 없으면 기본 상태예요", () => {
     expect(parseState(null)).toEqual(DEFAULT_STATE);
   });

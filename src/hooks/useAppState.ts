@@ -24,6 +24,7 @@ interface UseAppStateReturn {
   drawToday: (today: DateKey) => { cardId: string; isNew: boolean };
   drawThree: (today: DateKey, topic: Topic) => Spread;
   markReminderAsked: () => void;
+  markReminderAgreed: () => void;
 }
 
 export function useAppState(): UseAppStateReturn {
@@ -82,5 +83,10 @@ export function useAppState(): UseAppStateReturn {
     [commit],
   );
 
-  return { state, loadStatus, saveError, retryLoad: load, drawToday, drawThree, markReminderAsked };
+  const markReminderAgreed = useCallback(
+    () => commit({ ...stateRef.current, reminderAsked: true, reminderAgreed: true }),
+    [commit],
+  );
+
+  return { state, loadStatus, saveError, retryLoad: load, drawToday, drawThree, markReminderAsked, markReminderAgreed };
 }

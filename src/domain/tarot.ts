@@ -14,7 +14,10 @@ export interface AppState {
   // 날짜별로 뽑은 오늘의 카드
   daily: Readonly<Record<DateKey, string>>;
   lastSpread: Spread | null;
+  // 처음 들어왔을 때 알림 안내를 이미 보여줬는지
   reminderAsked: boolean;
+  // 토스 알림 동의를 받았는지 (알림 끄기는 토스 앱 설정에서 해서, 앱에서는 켜기만 기록해요)
+  reminderAgreed: boolean;
 }
 
 export const DEFAULT_STATE: AppState = {
@@ -22,6 +25,7 @@ export const DEFAULT_STATE: AppState = {
   daily: {},
   lastSpread: null,
   reminderAsked: false,
+  reminderAgreed: false,
 };
 
 const dateKeySchema = z.string().refine(isValidDateKey);
@@ -38,6 +42,7 @@ const stateSchema = z.object({
     })
     .nullable(),
   reminderAsked: z.boolean(),
+  reminderAgreed: z.boolean().default(false),
 });
 
 // 저장된 값이 없으면 기본 상태, 깨져 있으면 에러를 내서 덮어쓰지 않게 해요.

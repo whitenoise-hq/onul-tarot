@@ -1,4 +1,5 @@
 import { Button, useToast } from "@toss/tds-mobile";
+import { useState } from "react";
 
 import "./App.css";
 import { ReminderSheet } from "./components/ReminderSheet";
@@ -18,8 +19,14 @@ import { isInToss } from "./platform/env";
 import { requestReminderAgreement } from "./platform/notification";
 import { shareText } from "./platform/share";
 
+// 알림 발송 코드가 생기기 전에는 알림 안내를 숨겨요. 개발 중에는 화면을 확인할 수 있게 보여줘요.
+const SHOW_REMINDER = IS_REMINDER_READY || import.meta.env.DEV;
+
 function App() {
-  const { state, loadStatus, saveError, retryLoad, drawToday, drawThree, markReminderAsked } = useAppState();
+  const { state, loadStatus, saveError, retryLoad, drawToday, drawThree, markReminderAsked, markReminderAgreed } =
+    useAppState();
+  // 알림 설정 시트를 직접 열었는지 (처음 들어왔을 때는 자동으로 열려요)
+  const [isReminderOpen, setReminderOpen] = useState(false);
   const today = useToday();
   // 하단 탭 없이 오늘의 카드 한 화면에서 시작하고, 바로가기로 고민 타로에 들어가요.
   const { screen, openSpread, goBack } = useScreen();
@@ -51,12 +58,21 @@ function App() {
     else onUnlocked();
   };
 
+  const closeReminder = () => {
+    setReminderOpen(false);
+    markReminderAsked();
+  };
+
   // 시트를 먼저 닫고 토스 알림 동의 화면을 띄워요.
   const handleRequestReminder = () => {
-    markReminderAsked();
+    closeReminder();
     requestReminderAgreement().then((result) => {
-      if (result === "agreed") notify(`매일 ${REMINDER_TIME_LABEL}에 알려드릴게요`);
-      else if (result === "unavailable") notify("토스 앱에서만 알림을 설정할 수 있어요");
+      if (result === "agreed") {
+        markReminderAgreed();
+        notify(`매일 ${REMINDER_TIME_LABEL}에 알려드릴게요`);
+      } else if (result === "unavailable") {
+        notify("토스 앱에서만 알림을 설정할 수 있어요");
+      }
     });
   };
 
@@ -75,6 +91,7 @@ function App() {
           onDraw={() => drawToday(today)}
           onShare={handleShare}
           onOpenTopic={openSpread}
+          onOpenReminder={SHOW_REMINDER ? () => setReminderOpen(true) : undefined}
         />
       )}
       {screen.name === "spread" && (
@@ -89,10 +106,12 @@ function App() {
           onBack={goBack}
         />
       )}
+      {/* 처음 들어왔을 때 한 번 자동으로 열려요. */}
       <ReminderSheet
-        open={IS_REMINDER_READY && !state.reminderAsked && todayCard !== undefined}
+        open={SHOW_REMINDER && (isReminderOpen || !state.reminderAsked)}
+        agreed={state.reminderAgreed}
         onAgree={handleRequestReminder}
-        onLater={markReminderAsked}
+        onClose={closeReminder}
       />
     </div>
   );

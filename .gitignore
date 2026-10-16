@@ -26,3 +26,6 @@ dist-ssr
 *.ait
 
 coverage
+
+# 카드 그림 원본 (webp로 변환해서 src/assets/cards에 넣어요)
+cards-source

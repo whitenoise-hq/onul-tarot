@@ -6,7 +6,7 @@
 // 콘솔 푸시 캠페인의 발송 코드예요. 출시 검토가 끝난 뒤 콘솔에서 만들고 여기에 넣어요.
 export const REMINDER_TEMPLATE_CODE: string = "";
 
-export const REMINDER_TIME_LABEL = "아침 8시 30분";
+export const REMINDER_TIME_LABEL = "오전 8시 30분";
 
 // 템플릿 코드가 없으면 알림 안내를 숨겨요.
 export const IS_REMINDER_READY = REMINDER_TEMPLATE_CODE !== "";
